@@ -29,11 +29,11 @@ fn parse_input(input: &str) -> Result<Vec<Equation>, Box<dyn Error>> {
     for line in input.lines() {
         let line = line.trim();
         if let Some((result, inputs)) = line.split_once(": ") {
-            let inputs: Vec<u128> = inputs
-                .split(" ")
-                .map(|x| x.parse().unwrap())
-                .collect();
-            equations.push(Equation { result: result.parse()?, inputs });
+            let inputs: Vec<u128> = inputs.split(" ").map(|x| x.parse().unwrap()).collect();
+            equations.push(Equation {
+                result: result.parse()?,
+                inputs,
+            });
             continue;
         }
     }
@@ -41,19 +41,17 @@ fn parse_input(input: &str) -> Result<Vec<Equation>, Box<dyn Error>> {
     Ok(equations)
 }
 
-
 pub fn part_one(input: &str) -> Option<u128> {
     let equations = parse_input(input).unwrap();
     let mut result = 0;
 
     for equation in equations {
         let num_ops = equation.inputs.len() - 1;
-        let combinations = (0..2u128.pow(num_ops as u32))
-            .map(|i| {
-                (0..num_ops)
-                    .map(|j| if (i & (1 << j)) != 0 { '+' } else { '*' })
-                    .collect::<Vec<char>>()
-            });
+        let combinations = (0..2u128.pow(num_ops as u32)).map(|i| {
+            (0..num_ops)
+                .map(|j| if (i & (1 << j)) != 0 { '+' } else { '*' })
+                .collect::<Vec<char>>()
+        });
         for combination in combinations {
             if evaluate_left_to_right(&equation.inputs, &combination) == equation.result {
                 result += equation.result;
@@ -71,18 +69,15 @@ pub fn part_two(input: &str) -> Option<u128> {
 
     for equation in equations {
         let num_ops = equation.inputs.len() - 1;
-        let combinations = (0..3u128.pow(num_ops as u32))
-            .map(|i| {
-                (0..num_ops)
-                    .map(|j| {
-                        match (i / 3u128.pow(j as u32)) % 3 {
-                            0 => '+',
-                            1 => '*',
-                            _ => '|',
-                        }
-                    })
-                    .collect::<Vec<char>>()
-            });
+        let combinations = (0..3u128.pow(num_ops as u32)).map(|i| {
+            (0..num_ops)
+                .map(|j| match (i / 3u128.pow(j as u32)) % 3 {
+                    0 => '+',
+                    1 => '*',
+                    _ => '|',
+                })
+                .collect::<Vec<char>>()
+        });
         for combination in combinations {
             if evaluate_left_to_right(&equation.inputs, &combination) == equation.result {
                 result += equation.result;
@@ -107,6 +102,6 @@ mod tests {
     #[test]
     fn test_part_two() {
         let result = part_two(&advent_of_code::template::read_file("examples", DAY));
-        assert_eq!(result, None);
+        assert_eq!(result, Some(11387));
     }
 }
