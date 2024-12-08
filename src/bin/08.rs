@@ -37,11 +37,14 @@ impl Grid {
     fn at(&self, p: Pos) -> u8 {
         self.0[p.1 as usize][p.0 as usize]
     }
+    fn is_occupied(&self, p: Pos) -> bool {
+        self.0[p.1 as usize][p.0 as usize] != b'.'
+    }
 }
 
 struct City {
-    grid: Grid, // grid
-    antenna: HashMap<u8, Vec<Pos>> // frequency -> list of positions
+    grid: Grid,                     // grid
+    antenna: HashMap<u8, Vec<Pos>>, // frequency -> list of positions
 }
 fn parse_input(input: &str) -> Option<City> {
     let grid: Vec<Vec<u8>> = input.lines().map(|l| l.as_bytes().to_vec()).collect();
@@ -49,8 +52,9 @@ fn parse_input(input: &str) -> Option<City> {
     let mut antenna = HashMap::new();
     for y in 0..g.yln() {
         for x in 0..g.xln() {
-            if g.at(Pos(x as i32, y as i32))!= b'.' {
-                antenna.entry(g.at(Pos(x as i32, y as i32))).or_insert(Vec::new()).push(Pos(x as i32, y as i32));
+            let p = Pos(x as i32, y as i32);
+            if g.is_occupied(p) {
+                antenna.entry(g.at(p)).or_insert(Vec::new()).push(p);
             }
         }
     }
@@ -76,7 +80,6 @@ pub fn part_one(input: &str) -> Option<u32> {
     }
     Some(antinodes.len() as u32)
 }
-
 
 pub fn part_two(input: &str) -> Option<u32> {
     let city = parse_input(input).unwrap();
