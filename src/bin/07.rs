@@ -11,7 +11,7 @@ fn concat(a: u128, b: u128) -> u128 {
     a * 10u128.pow(b.ilog10() + 1) + b
 }
 
-fn evaluate_left_to_right(numbers: &Vec<u128>, operators: &Vec<char>) -> u128 {
+fn evaluate_left_to_right(numbers: &[u128], operators: &[char]) -> u128 {
     let mut result = numbers[0];
     for (i, &op) in operators.iter().enumerate() {
         match op {
